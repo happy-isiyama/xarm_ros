@@ -29,6 +29,7 @@
   <arg name="gripper_controller_name" value="$(eval 'gripper_velo_traj_controller' if arg('velocity_control') else 'gripper_traj_controller')" />
   <remap if="$(arg add_gripper)" from="gripper_controller/follow_joint_trajectory" to="/$(arg namespace)/$(arg gripper_controller_name)/follow_joint_trajectory"/>
 
+  <!-- Include MoveIt! configuration -->
   <include file="$(find xarm6_moveit_config)/launch/moveit_rviz_common.launch">
     <arg name="jnt_stat_source" value="[/$(arg namespace)/joint_states]" />
     <arg name="load_move_group" value="true" />
@@ -53,8 +54,6 @@
     <arg name="geometry_mesh_origin_rpy" value="$(arg geometry_mesh_origin_rpy)"/>
     <arg name="geometry_mesh_tcp_xyz" value="$(arg geometry_mesh_tcp_xyz)"/>
     <arg name="geometry_mesh_tcp_rpy" value="$(arg geometry_mesh_tcp_rpy)"/>
-  
   </include>
 
-  
 </launch>

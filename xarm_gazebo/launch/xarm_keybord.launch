@@ -1,18 +1,20 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="robot_dof" />
-  <arg name="paused" default="false" doc="Starts gazebo in paused mode" />
-  <arg name="gui" default="true" doc="Starts gazebo gui" />
+  <arg name="robot_dof" default="6" />
+  <arg name="paused" default="false" />
+  <arg name="gui" default="true" />
   <arg name="effort_control" default="false"/>
-  <arg name="velocity_control" default="false"/>
+  <arg name="velocity_control" default="true"/> <!-- Velocity control is more common in simulations -->
   <arg name="namespace" default="xarm"/>
   <arg name="model1300" default="false" />
-  <arg name="add_realsense_d435i" default="true" />
-  <arg name="add_d435i_links" default="true" />
+  <arg name="add_realsense_d435i" default="false" />
+  <arg name="add_d435i_links" default="false" />
   <arg name="robot_sn" default="" />
-  
+  <arg name="joystick_type" default="99" />
+
   <rosparam file="$(eval find('xarm' + str(arg('robot_dof')) + '_moveit_config') + '/config/xarm' + str(arg('robot_dof')) + '_params.yaml')" command="load" ns="$(arg namespace)"/>
   <rosparam file="$(find xarm_controller)/config/gripper/gripper_gazebo_ros_control.yaml" command="load"/>
+  
   <!-- startup simulated world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find xarm_gazebo)/worlds/xarm_camera_scene.world"/>
@@ -36,17 +38,14 @@
     <rosparam file="$(eval find('xarm' + str(arg('robot_dof')) + '_gripper_moveit_config') + '/config/joint_limits.yaml')" command="load"/>
   </group>
 
-  <!-- Load default settings for kinematics; these settings are overridden by settings in a node's namespace -->
   <group ns="robot_description_kinematics">
     <rosparam file="$(eval find('xarm' + str(arg('robot_dof')) + '_gripper_moveit_config') + '/config/kinematics.yaml')" command="load"/>
   </group>
 
-  <!-- spawn robot model in gazebo, located on the table, -gazebo_namespace defaults to be /gazebo -->
   <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model"
     respawn="false" output="screen"
     args="-gazebo_namespace gazebo -urdf -model xarm$(arg robot_dof) -x 0 -y 0 -z 0.775 -Y 0 -param robot_description"/>
 
-  <!-- load the corresponding controllers -->
   <include file="$(find xarm_controller)/launch/xarm$(arg robot_dof)_control.launch">
     <arg name="run_demo_traj" value="false"/>
     <arg name="effort_control" value="$(arg effort_control)"/>
@@ -71,4 +70,11 @@
     <arg name="debug" value="false"/>
     <arg name="gripper_controller" value="true"/>
   </include>
+
+<node name="xarm_keyboard_to_servo" pkg="xarm_moveit_servo" type="xarm_keyboard_to_servo_node" output="screen">
+  <param name="dof" type="int" value="$(arg dof)" />
+  <param name="ros_queue_size" type="int" value="1" />
+  <param name="joystick_type" type="int" value="$(arg joystick_type)" />
+</node>
+
 </launch>

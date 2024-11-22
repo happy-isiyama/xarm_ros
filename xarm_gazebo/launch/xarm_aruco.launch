@@ -15,7 +15,7 @@
   <rosparam file="$(find xarm_controller)/config/gripper/gripper_gazebo_ros_control.yaml" command="load"/>
   <!-- startup simulated world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find xarm_gazebo)/worlds/xarm_camera_scene.world"/>
+    <arg name="world_name" value="$(find xarm_gazebo)/worlds/xarm_aruco.world"/>
     <arg name="paused" value="$(arg paused)"/>
     <arg name="gui" value="$(arg gui)"/>
   </include>
@@ -41,11 +41,11 @@
     <rosparam file="$(eval find('xarm' + str(arg('robot_dof')) + '_gripper_moveit_config') + '/config/kinematics.yaml')" command="load"/>
   </group>
 
-  <!-- spawn robot model in gazebo, located on the table, -gazebo_namespace defaults to be /gazebo -->
+  <!-- ロボットモデルのspawn -->
   <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model"
     respawn="false" output="screen"
-    args="-gazebo_namespace gazebo -urdf -model xarm$(arg robot_dof) -x 0 -y 0 -z 0.775 -Y 0 -param robot_description"/>
-
+    args="-gazebo_namespace gazebo -urdf -model xarm$(arg robot_dof) -x 0 -y 0.5 -z 0.5 -Y 1.5708 -param robot_description"/>
+ 
   <!-- load the corresponding controllers -->
   <include file="$(find xarm_controller)/launch/xarm$(arg robot_dof)_control.launch">
     <arg name="run_demo_traj" value="false"/>

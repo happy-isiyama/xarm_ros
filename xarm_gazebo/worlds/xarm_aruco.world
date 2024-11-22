@@ -1,0 +1,213 @@
+<?xml version="1.0" ?>
+
+<sdf version="1.6">
+
+  <world name="default">
+
+    <!-- GUI カメラの設定 -->
+    <gui>
+      <camera name="user_camera">
+        <!-- カメラの位置と向きを調整 -->
+        <pose>1.0 -2.0 1.5 0.0 0.3 1.5</pose>
+        <image>
+          <width>800</width>
+          <height>600</height>
+        </image>
+        <clip>
+          <near>0.1</near>
+          <far>100</far>
+        </clip>
+      </camera>
+    </gui>
+
+    <!-- 重力の設定 -->
+    <gravity>0 0 -9.81</gravity>
+
+    <!-- 物理エンジンの設定 -->
+    <physics name="default_physics" default="0" type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+
+    <!-- シーンの設定 -->
+    <scene>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>1</shadows>
+    </scene>
+
+    <!-- 光源の追加 -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- 地面の追加 -->
+    <include>
+      <uri>model://ground_plane</uri>
+      <pose>0 0 0 0 0 0</pose>
+    </include>
+
+    <!-- 仮想棚の追加 -->
+    <model name="virtual_shelf">
+      <static>true</static>
+      <pose>0 1.0 0.5 0 0 0</pose> <!-- y=1.0m 前方に配置, z=0.5m 高さを下げる -->
+
+      <!-- 棚の本体 -->
+      <link name="shelf_main">
+        <collision name="shelf_collision">
+          <geometry>
+            <box>
+              <size>0.9 0.5 0.02</size> <!-- 幅0.9m, 奥行き0.5m, 高さ0.02m -->
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>1.0</mu>
+                <mu2>1.0</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name="shelf_visual">
+          <geometry>
+            <box>
+              <size>0.9 0.5 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <!-- アクリル板風のマテリアルに変更 -->
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Glass</name> <!-- Gazebo/Grey から Gazebo/Glass に変更 -->
+            </script>
+            <!-- より透明感のある色を設定 -->
+            <ambient>0.8 0.8 1.0 1</ambient>
+            <diffuse>0.8 0.8 1.0 1</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+            <emissive>0 0 0 1</emissive>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 棚の背面 -->
+      <link name="shelf_back">
+        <pose>0 0.25 0.2 0 0 0</pose>
+        <collision name="shelf_back_collision">
+          <geometry>
+            <box>
+              <size>0.9 0.02 0.4</size> <!-- 幅0.9m, 奥行き0.02m, 高さ0.4m -->
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>1.0</mu>
+                <mu2>1.0</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name="shelf_back_visual">
+          <geometry>
+            <box>
+              <size>0.9 0.02 0.4</size>
+            </box>
+          </geometry>
+          <material>
+            <!-- アクリル板風のマテリアルに変更 -->
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Glass</name>
+            </script>
+            <!-- より透明感のある色を設定 -->
+            <ambient>0.8 0.8 1.0 1</ambient>
+            <diffuse>0.8 0.8 1.0 1</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+            <emissive>0 0 0 1</emissive>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 棚のジョイント -->
+      <joint name="shelf_main_to_back" type="fixed">
+        <parent>shelf_main</parent>
+        <child>shelf_back</child>
+        <pose>0 0.25 0.2 0 0 0</pose>
+      </joint>
+
+    </model>
+
+    <!-- ArUcoマーカーの追加 -->
+    <!-- 棚の四つ角にマーカーを棚内部に配置 -->
+    <!-- 棚内部に配置するため、棚のリンクに固定 -->
+<!-- マーカーID 31: 左前内部 -->
+<model name="aruco_marker_31">
+  <static>true</static>
+  <pose>-0.4 0.81 0.52 0 0 3.1415</pose> <!-- shelf_main の中心から x=-0.35, y=-0.2, z=0.51 -->
+  <link name="marker_link_31">
+    <visual name="marker_visual_31">
+      <geometry>
+        <plane>
+          <size>0.04 0.04 0.01</size> <!-- マーカーサイズ5cm x 5cm -->
+        </plane>
+      </geometry>
+      <material>
+        <script>
+          <uri>file://media/materials/scripts/gazebo.material</uri>
+          <name>Gazebo/White</name>
+        </script>
+        <texture>file:///homes/yuki/catkin_ws/src/xarm_ros/xarm_gazebo/markers/4x4_1000-31.png</texture> <!-- 実際のパスに変更 -->
+      </material>
+    </visual>
+  </link>
+</model>
+
+<!-- 以下、他のマーカーも同様に棚内部に配置 -->
+<!-- マーカーID 32: 右前内部 -->
+<model name="aruco_marker_32">
+  <static>true</static>
+  <pose>0.4 0.81 0.52 0 0 3.14159</pose>
+  <link name="marker_link_32">
+    <visual name="marker_visual_32">
+      <geometry>
+        <plane>
+          <size>0.04 0.04</size>
+        </plane>
+      </geometry>
+      <material>
+        <ambient>1 1 1 1</ambient>
+        <diffuse>1 1 1 1</diffuse>
+        <specular>1 1 1 1</specular>
+        <emissive>0 0 0 1</emissive>
+        <texture>file://home/yuki/catkin_ws/src/xarm_ros/xarm_gazebo/markers/4x4_1000-32.png</texture>
+      </material>
+    </visual>
+  </link>
+</model>
+
+<!-- マーカーID 33: 左後内部 -->
+<model name="aruco_marker_33">
+  <static>true</static>
+  <pose>-0.4 1.2 0.52 0 0 0</pose>
+  <link name="marker_link_33">
+    <visual name="marker_visual_33">
+      <geometry>
+        <plane>
+          <size>0.04 0.04</size>
+        </plane>
+      </geometry>
+      <material>
+        <script>
+          <uri>file://media/materials/scripts/gazebo.material</uri>
+          <name>Gazebo/White</name>
+        </script>
+        <texture>file://home/yuki/catkin_ws/src/xarm_ros/xarm_gazebo/markers/4x4_1000-33.png</texture>
+      </material>
+    </visual>
+  </link>
+</model>
+  </world>
+
+</sdf>

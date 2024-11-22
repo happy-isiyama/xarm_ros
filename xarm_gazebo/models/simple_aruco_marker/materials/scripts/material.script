@@ -1,0 +1,14 @@
+material SimpleArucoMarker/Marker
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture marker_texture.png
+      }
+    }
+  }
+}
+

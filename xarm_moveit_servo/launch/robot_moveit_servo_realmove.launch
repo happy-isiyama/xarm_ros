@@ -17,7 +17,7 @@
 
   <arg name="add_realsense_d435i" default="false" />
   <arg name="add_d435i_links" default="false" />
-  <arg name="add_gripper" default="false" />
+  <arg name="add_gripper" default="true" />
   <arg name="add_vacuum_gripper" default="false" />
   <arg name="add_other_geometry" default="false"/>
   <arg name="geometry_type" default="box"/>

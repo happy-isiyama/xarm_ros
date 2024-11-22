@@ -1,0 +1,21 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <world name='default'>
+
+    <!-- 地面と照明のインクルード -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- ArUcoマーカーのインクルード -->
+    <include>
+      <uri>model://simple_aruco_marker</uri>
+      <pose>1 0 0 0 0 0</pose> <!-- 必要に応じて位置と回転を調整 -->
+    </include>
+
+  </world>
+</sdf>
+
